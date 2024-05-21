@@ -29,6 +29,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	char keys[256] = { 0 };
 	char preKeys[256] = { 0 };
 
+
 	//オーディオコントローラー
 	AudioController audioController;
 
@@ -37,6 +38,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//車の走行音
 	SoundSource carNoize;
+
 
 	//プレイヤーの速度
 	Vector2 playerVelocity{ 0.0f,0.0f };
@@ -50,6 +52,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//救急車の座標
 	Vector2 ambulancePosition{ 1280.0f / 2.0f - 1280.0f / 2.0f ,720.0f / 2.0f };
 
+
 	//半径
 	float radius = 30.0f;
 
@@ -61,6 +64,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//速度の最大値
 	float maxVelocity = 5.0f;
+
 
 	//音速
 	float sonic = 50.0f;
@@ -74,8 +78,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//周波数の新レート
 	float targetRate = 1.0f;
 
+
 	//オーディオコントローラーの初期化
 	audioController.Initialize();
+
 
 	//サイレンのデータ読み込み
 	siren.soundData = audioController.SoundLoadWave("Resources/siren.wav");
@@ -86,15 +92,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//サイレンの周波数を取得
 	siren.pSourceVoice->GetFrequencyRatio(&sourceRate);
 
+
 	//走行音の読み込み
 	carNoize.soundData = audioController.SoundLoadWave("Resources/carunoise-loop.wav");
 
 	//走行音のデータ作成
 	carNoize = audioController.CreateSoundSource(carNoize, true);
 
+
 	//サイレンと走行音の音を鳴らす
 	audioController.PlaySoundWave(siren);
 	audioController.PlaySoundWave(carNoize);
+
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -118,6 +127,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			carNoize.pSourceVoice->Stop();
 		}
 
+		//プレイヤーの移動
 		//左右移動
 		if (keys[DIK_A] || keys[DIK_D]) {
 			if (keys[DIK_A]) {
@@ -157,6 +167,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		playerPosition.x += playerVelocity.x;
 		playerPosition.y += playerVelocity.y;
 
+		//救急車の移動
 		//左右移動
 		if (keys[DIK_LEFTARROW] || keys[DIK_RIGHTARROW]) {
 			if (keys[DIK_LEFTARROW]) {
@@ -193,6 +204,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ambulancePosition.x += ambulanceVelocity.x;
 		ambulancePosition.y += ambulanceVelocity.y;
 
+
 		//プレイヤーの移動方向
 		float playerDirection = cosf(atan2f(playerVelocity.y, playerVelocity.x));
 
@@ -201,6 +213,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		//プレイヤーから救急車に向けての移動速度
 		float playerV = PtoADirection * sqrtf(Dot(playerVelocity, playerVelocity));
+
 
 		//救急車の移動方向
 		float ambulanceDirection = cosf(atan2f(ambulanceVelocity.y, ambulanceVelocity.x));
@@ -211,6 +224,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//救急車からプレイヤーに向けての移動速度
 		float ambulanceV = AtoPDirection * sqrtf(Dot(ambulanceVelocity, ambulanceVelocity));
 
+
 		//ドップラー効果の計算
 		targetRate = ((sonic - playerV) / (sonic + ambulanceV)) * sourceRate;
 
@@ -220,9 +234,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//サイレンのピッチを指定した周波数で変更
 		siren.pSourceVoice->SetFrequencyRatio(frequencyRatio);
 
+
 		//音量の変更
 		siren.pSourceVoice->SetVolume(volume);
 		carNoize.pSourceVoice->SetVolume(volume);
+
 
 		//プレイヤーのimgui
 		if (ImGui::TreeNode("player")) {
